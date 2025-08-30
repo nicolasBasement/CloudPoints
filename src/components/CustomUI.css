@@ -1,0 +1,327 @@
+/* Custom UI Styles - Vercel Style Design */
+
+.custom-ui {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 320px;
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(75, 85, 99, 0.6);
+  border-radius: 12px;
+  color: #f9fafb;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.4),
+    0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  user-select: none;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Scrollbar styling */
+.custom-ui::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-ui::-webkit-scrollbar-track {
+  background: rgba(55, 65, 81, 0.5);
+  border-radius: 3px;
+}
+
+.custom-ui::-webkit-scrollbar-thumb {
+  background: rgba(107, 114, 128, 0.7);
+  border-radius: 3px;
+}
+
+.custom-ui::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+/* Header */
+.ui-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.6);
+}
+
+.ui-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.particle-count {
+  font-size: 12px;
+  color: #d1d5db;
+  font-weight: 500;
+}
+
+/* Tabs */
+.ui-tabs {
+  display: flex;
+  background: rgba(31, 41, 55, 0.8);
+  margin: 0 16px;
+  margin-top: 16px;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab:hover {
+  color: #f3f4f6;
+  background: rgba(55, 65, 81, 0.8);
+}
+
+.tab.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+/* Content */
+.ui-content {
+  padding: 20px;
+}
+
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Control Groups */
+.control-group {
+  margin-bottom: 20px;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+.control-group > label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #f3f4f6;
+  margin-bottom: 8px;
+}
+
+.control-group > label input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: #ffffff;
+}
+
+/* Sliders */
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(75, 85, 99, 0.8);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.3);
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.2);
+}
+
+/* Button Groups */
+.button-group {
+  display: flex;
+  gap: 4px;
+  background: rgba(31, 41, 55, 0.8);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.button-group button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button-group button:hover {
+  color: #f3f4f6;
+  background: rgba(55, 65, 81, 0.8);
+}
+
+.button-group button.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.1);
+}
+
+/* Action Buttons */
+.action-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(75, 85, 99, 0.8);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.action-btn.primary {
+  background: #ffffff;
+  color: #111827;
+  border-color: #ffffff;
+}
+
+.action-btn.primary:hover {
+  background: #f9fafb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+.action-btn.secondary {
+  background: rgba(31, 41, 55, 0.8);
+  color: #f3f4f6;
+  border-color: rgba(75, 85, 99, 0.8);
+}
+
+.action-btn.secondary:hover {
+  background: rgba(55, 65, 81, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+.action-btn.tertiary {
+  background: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.action-btn.tertiary:hover {
+  background: rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}
+
+.action-btn.warning {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.action-btn.warning:hover {
+  background: rgba(239, 68, 68, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.action-btn.disabled,
+.action-btn:disabled {
+  background: rgba(31, 41, 55, 0.6);
+  color: #6b7280;
+  border-color: rgba(55, 65, 81, 0.6);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.action-btn.disabled:hover,
+.action-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Hints */
+.hint {
+  font-size: 11px;
+  color: #d1d5db;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.hint.error {
+  color: #f87171;
+}
+
+/* Footer (Hidden - no debug toggle) */
+.ui-footer {
+  display: none;
+}
+
+/* Debug Panel (Hidden by default) */
+.debug-panel {
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .custom-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    max-height: none;
+  }
+}
+
+/* Animation for smooth transitions */
+* {
+  box-sizing: border-box;
+}
+
+.custom-ui * {
+  transition: all 0.2s ease;
+}
