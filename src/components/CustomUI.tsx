@@ -13,14 +13,8 @@ export interface UIState {
   // Camera & Animation
   enableRotation: boolean;
   showAxesHelper: boolean;
-  
-  // Physics
-  enablePhysics: boolean;
-  windStrength: number;
-  windSpeed: number;
-  mouseInteraction: boolean;
-  mouseForce: number;
-  returnSpeed: number;
+  invertYAxis: boolean;
+  backgroundColor: string;
   
   // Export - now always PNG
 }
@@ -41,7 +35,6 @@ interface CustomUIProps {
   isLoading: boolean;
   particleCount: number;
   shouldDisableExport: boolean;
-  debugInfo: any;
 }
 
 export const CustomUI: React.FC<CustomUIProps> = ({
@@ -55,10 +48,9 @@ export const CustomUI: React.FC<CustomUIProps> = ({
   onResetLoading,
   isLoading,
   particleCount,
-  shouldDisableExport,
-  debugInfo
+  shouldDisableExport
 }) => {
-  const [activeTab, setActiveTab] = useState<'particles' | 'data' | 'physics' | 'export'>('particles');
+  const [activeTab, setActiveTab] = useState<'particles' | 'data' | 'export'>('particles');
 
   return (
     <div className="custom-ui">
@@ -84,12 +76,6 @@ export const CustomUI: React.FC<CustomUIProps> = ({
           onClick={() => setActiveTab('data')}
         >
           Data
-        </button>
-        <button 
-          className={`tab ${activeTab === 'physics' ? 'active' : ''}`}
-          onClick={() => setActiveTab('physics')}
-        >
-          Physics
         </button>
         <button 
           className={`tab ${activeTab === 'export' ? 'active' : ''}`}
@@ -225,6 +211,54 @@ export const CustomUI: React.FC<CustomUIProps> = ({
                 Show Axes
               </label>
             </div>
+
+            <div className="control-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={state.invertYAxis}
+                  onChange={(e) => onChange({ invertYAxis: e.target.checked })}
+                />
+                Invert Y-Axis
+              </label>
+              <div className="hint">Flips particles vertically</div>
+            </div>
+
+            <div className="control-group">
+              <label>Background Color</label>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginTop: '5px' }}>
+                <input
+                  type="color"
+                  value={state.backgroundColor}
+                  onChange={(e) => onChange({ backgroundColor: e.target.value })}
+                  style={{
+                    width: '40px',
+                    height: '30px',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    backgroundColor: state.backgroundColor
+                  }}
+                />
+                <input
+                  type="text"
+                  value={state.backgroundColor}
+                  onChange={(e) => onChange({ backgroundColor: e.target.value })}
+                  placeholder="#001122"
+                  style={{
+                    flex: 1,
+                    padding: '6px 8px',
+                    border: '1px solid #333',
+                    borderRadius: '4px',
+                    backgroundColor: '#222',
+                    color: '#fff',
+                    fontSize: '12px',
+                    fontFamily: 'monospace'
+                  }}
+                />
+              </div>
+              <div className="hint">Click color box or enter hex code (e.g., #001122)</div>
+            </div>
           </div>
         )}
 
@@ -273,126 +307,6 @@ export const CustomUI: React.FC<CustomUIProps> = ({
           </div>
         )}
 
-        {activeTab === 'physics' && (
-          <div className="tab-content">
-            {/* Enable Physics */}
-            <div className="control-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={state.enablePhysics}
-                  onChange={(e) => onChange({ enablePhysics: e.target.checked })}
-                />
-                Mouse Physics
-              </label>
-              <div className="hint">Particles react to mouse movement</div>
-            </div>
-
-            {/* Mouse Physics - Simple and Effective */}
-            <div className="control-group">
-              <div className="hint" style={{ color: '#f59e0b', fontSize: '11px', marginBottom: '10px' }}>
-                ⚠️ COMPLEX PHYSICS DISABLED - Try simple alternatives below
-              </div>
-            </div>
-
-            {/* SIMPLE ALTERNATIVES */}
-            <div className="control-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={state.enableRotation}
-                  onChange={(e) => onChange({ enableRotation: e.target.checked })}
-                />
-                Auto Rotation
-              </label>
-              <div className="hint">Slowly rotate the entire particle cloud</div>
-            </div>
-
-            <div className="control-group">
-              <label>Particle Size: {state.particleSize.toFixed(2)}</label>
-              <input
-                type="range"
-                min="0.01"
-                max="2.0"
-                step="0.01"
-                value={state.particleSize}
-                onChange={(e) => onChange({ particleSize: parseFloat(e.target.value) })}
-              />
-              <div className="hint">Change particle size dynamically</div>
-            </div>
-
-            <div className="control-group">
-              <label>Bloom Intensity: {state.bloomIntensity.toFixed(1)}</label>
-              <input
-                type="range"
-                min="0"
-                max="3"
-                step="0.1"
-                value={state.bloomIntensity}
-                onChange={(e) => onChange({ bloomIntensity: parseFloat(e.target.value) })}
-              />
-              <div className="hint">Adjust glow effect around particles</div>
-            </div>
-
-            <div className="control-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={state.mouseInteraction || false}
-                  onChange={(e) => onChange({ mouseInteraction: e.target.checked })}
-                />
-                Mouse Hover Effect
-              </label>
-              <div className="hint">Particles react to mouse position (hover effect)</div>
-            </div>
-
-            {state.mouseInteraction && (
-              <div className="control-group">
-                <label>Hover Strength: {(state.mouseForce || 1.5).toFixed(1)}</label>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="3.0"
-                  step="0.1"
-                  value={state.mouseForce || 1.5}
-                  onChange={(e) => onChange({ mouseForce: parseFloat(e.target.value) })}
-                />
-                <div className="hint">How much particles grow when mouse is near (smaller radius, precise effect)</div>
-              </div>
-            )}
-
-            <div className="control-group">
-              <button 
-                className="action-btn"
-                onClick={() => {
-                  // Reset to default values
-                  onChange({ 
-                    particleSize: 0.15,
-                    bloomIntensity: 1.0,
-                    enableRotation: false,
-                    mouseInteraction: false,
-                    mouseForce: 1.5
-                  });
-                }}
-              >
-                Reset to Defaults
-              </button>
-              <div className="hint">Reset all controls to default values</div>
-            </div>
-
-            <div className="control-group">
-              <div className="hint" style={{ color: '#22c55e', fontSize: '11px' }}>
-                ✅ These controls work immediately without breaking particles
-              </div>
-            </div>
-
-            <div className="control-group">
-              <div className="hint" style={{ color: '#3b82f6', fontSize: '11px' }}>
-                Try: Auto Rotation + larger particle size + higher bloom for cinematic effect
-              </div>
-            </div>
-          </div>
-        )}
 
         {activeTab === 'export' && (
           <div className="tab-content">

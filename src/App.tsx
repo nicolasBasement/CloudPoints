@@ -16,10 +16,6 @@ function Scene() {
   const { 
     particleData, 
     isLoading, 
-    error, 
-    loadingProgress, 
-    loadFromJSON, 
-    generateProcedural, 
     loadHoudiniData,
     loadCustomJSON,
     setTestData,
@@ -39,12 +35,8 @@ function Scene() {
     bloomRadius: 0.4,
     enableRotation: false,
     showAxesHelper: true,
-    enablePhysics: false,
-    windStrength: 0.0,
-    windSpeed: 0.0,
-    mouseInteraction: false, // Default disabled for stability
-    mouseForce: 1.5,
-    returnSpeed: 3.0
+    invertYAxis: false,
+    backgroundColor: '#001122'
   });
 
   // Convert UI state to VisualizationConfig
@@ -56,12 +48,13 @@ function Scene() {
     bloomIntensity: uiState.bloomIntensity,
     bloomRadius: uiState.bloomRadius,
     enableRotation: uiState.enableRotation,
-    enablePhysics: uiState.enablePhysics,
-    windStrength: uiState.windStrength,
-    windSpeed: uiState.windSpeed,
-    mouseInteraction: uiState.mouseInteraction,
-    mouseForce: uiState.mouseForce,
-    returnSpeed: uiState.returnSpeed
+    invertYAxis: uiState.invertYAxis
+  };
+
+  // Generate dynamic background gradient
+  const generateBackgroundGradient = (color: string): string => {
+    // Create a radial gradient from the selected color to black
+    return `radial-gradient(circle, ${color} 0%, #000000 100%)`;
   };
 
   // Simple test data handler
@@ -106,46 +99,24 @@ function Scene() {
   const renderParticleSystem = () => {
     if (!particleData) return null;
 
-    // Create extended config with rotation and mouse interaction settings
-    const extendedConfig = { 
-      ...config, 
-      enableRotation: uiState.enableRotation,
-      mouseInteraction: uiState.mouseInteraction,
-      mouseForce: uiState.mouseForce
-    };
-
-    // Debug mode removed - always use standard components
-
     if (config.visualizationMode === 'texture' && textureData) {
       return (
         <TextureParticleSystem
           textureData={textureData}
           particleCount={particleData.particles.length}
-          config={extendedConfig}
+          config={config}
         />
       );
     } else {
       return (
         <ParticleSystem
           particles={particleData.particles}
-          config={extendedConfig}
+          config={config}
         />
       );
     }
   };
 
-  // Debug info for CustomUI
-  const debugInfo = {
-    particleCount: particleData?.particles?.length || 0,
-    isLoading,
-    shouldDisableExport,
-    error: error || null,
-    loadingProgress,
-    textureDataExists: !!textureData,
-    visualizationMode: config.visualizationMode,
-    firstParticle: particleData?.particles?.[0] || null,
-    metadata: particleData?.metadata || null
-  };
 
   return (
     <>
@@ -162,14 +133,13 @@ function Scene() {
         isLoading={isLoading}
         particleCount={particleData?.particles?.length || 0}
         shouldDisableExport={shouldDisableExport}
-        debugInfo={debugInfo}
       />
 
       {/* Canvas */}
       <Canvas
         camera={{ position: [15, 15, 15], fov: 60 }}
         gl={{ antialias: true }}
-        style={{ background: 'radial-gradient(circle, #001122 0%, #000000 100%)' }}
+        style={{ background: generateBackgroundGradient(uiState.backgroundColor) }}
       >
         <Suspense fallback={null}>
           {/* Lighting */}

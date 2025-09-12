@@ -128,13 +128,15 @@ export const TextureParticleSystem: React.FC<TextureParticleSystemProps> = ({
           positionTexture: { value: positionTexture },
           colorTexture: { value: colorTexture },
           textureSize: { value: textureSize },
-          particleSize: { value: config.particleSize }
+          particleSize: { value: config.particleSize },
+          invertYAxis: { value: config.invertYAxis ? 1.0 : 0.0 }
         },
         vertexShader: `
           uniform sampler2D positionTexture;
           uniform sampler2D colorTexture;
           uniform float textureSize;
           uniform float particleSize;
+          uniform float invertYAxis;
           
           attribute float instanceId;
           varying vec3 vColor;
@@ -149,8 +151,8 @@ export const TextureParticleSystem: React.FC<TextureParticleSystemProps> = ({
             vec4 positionSample = texture2D(positionTexture, uv);
             vec3 instancePosition = (positionSample.rgb - 0.5) * 20.0;
             
-            // Invert Y axis to match Houdini coordinate system
-            instancePosition.y = -instancePosition.y;
+            // Conditionally invert Y axis based on config
+            instancePosition.y = invertYAxis > 0.5 ? instancePosition.y : -instancePosition.y;
             
             vec4 colorSample = texture2D(colorTexture, uv);
             vColor = colorSample.rgb;

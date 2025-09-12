@@ -57,7 +57,7 @@ export class EXRExporter {
   private static async createEXRLikePositionTexture(
     particles: Particle[], 
     textureSize: number, 
-    bounds: { min: [number, number, number], max: [number, number, number] }
+    _bounds: { min: [number, number, number], max: [number, number, number] }
   ): Promise<string> {
     
     const canvas = document.createElement('canvas');

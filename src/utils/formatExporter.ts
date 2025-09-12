@@ -42,7 +42,7 @@ export class FormatExporter {
         particleCount,
         bounds,
         format,
-        precision: format === 'exr' ? 'Half Float (16-bit)' : format === 'png' ? '8-bit RGBA' : '8-bit RGB'
+        precision: format === 'png' ? '8-bit RGBA' : '8-bit RGB'
       }
     };
   }
@@ -179,8 +179,7 @@ export class FormatExporter {
     baseFilename: string
   ): Promise<void> {
     const ext = exportResult.metadata.format;
-    const precisionLabel = exportResult.metadata.format === 'exr' ? '_HALF' : 
-                          exportResult.metadata.format === 'png' ? '_8BIT' : '_COMP';
+    const precisionLabel = exportResult.metadata.format === 'png' ? '_8BIT' : '_COMP';
 
     // Download position texture
     this.downloadFile(

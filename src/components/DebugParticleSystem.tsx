@@ -60,9 +60,9 @@ export const DebugParticleSystem: React.FC<DebugParticleSystemProps> = ({ partic
     particles.forEach((particle, index) => {
       const i3 = index * 3;
       
-      // Positions (invert Y axis to match Houdini coordinate system)
+      // Positions (invert Y axis based on config)
       positions[i3] = particle.position[0];      // X
-      positions[i3 + 1] = -particle.position[1]; // Y inverted
+      positions[i3 + 1] = config.invertYAxis ? particle.position[1] : -particle.position[1]; // Y controlled by config
       positions[i3 + 2] = particle.position[2];  // Z
       
       // Colors (ensure they're in 0-1 range)

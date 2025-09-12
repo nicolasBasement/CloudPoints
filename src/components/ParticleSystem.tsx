@@ -1,5 +1,5 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import React, { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Particle, VisualizationConfig } from '../types/particle';
 import { DotTextures } from '../utils/dotTextures';
@@ -15,9 +15,6 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({ particles, confi
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const groupRef = useRef<THREE.Group>(null);
   
-  // Mouse interaction state
-  const [mousePosition, setMousePosition] = useState<THREE.Vector3>(new THREE.Vector3(0, 0, 0));
-  const { camera, gl } = useThree();
   
   // PHYSICS DISABLED - Use original particles always to prevent disappearing
   // const { particles: physicsParticles, isPhysicsEnabled } = usePhysics(particles, config);
@@ -25,81 +22,10 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({ particles, confi
   // Always use original particles (physics completely disabled)
   const renderParticles = particles;
   
-  // Mouse tracking with throttling to prevent flicker
-  const lastMouseUpdate = useRef(0);
-  
-  React.useEffect(() => {
-    if (!config.mouseInteraction) return;
-
-    const canvasElement = gl.domElement;
-
-    const handleMouseMove = (event: MouseEvent) => {
-      // Throttle mouse updates to 30 FPS to prevent flicker
-      const now = Date.now();
-      if (now - lastMouseUpdate.current < 33) return; // ~30 FPS
-      lastMouseUpdate.current = now;
-
-      // Get canvas bounds
-      const rect = canvasElement.getBoundingClientRect();
-      
-      // Convert mouse position to normalized device coordinates (-1 to +1)
-      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-      
-      // Create raycaster to get world position
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2(x, y);
-      raycaster.setFromCamera(mouse, camera);
-      
-      // Project to particle cloud center distance
-      const distance = 8; // Closer to particle cloud
-      const direction = raycaster.ray.direction.clone();
-      const worldPosition = raycaster.ray.origin.clone().add(direction.multiplyScalar(distance));
-      
-      setMousePosition(worldPosition);
-    };
-
-    canvasElement.addEventListener('mousemove', handleMouseMove);
-    
-    return () => {
-      canvasElement.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [config.mouseInteraction, camera, gl]);
-
-  // Animation + optimized mouse interaction updates
-  const prevMouseInteraction = useRef(config.mouseInteraction);
-  const prevMouseForce = useRef(config.mouseForce);
-  const prevMousePos = useRef(new THREE.Vector3());
 
   useFrame((_: any, delta: number) => {
     if (config.enableRotation && groupRef.current) {
       groupRef.current.rotation.y += delta * 0.1; // Slow rotation around Y-axis
-    }
-
-    // Only update mouse uniforms when needed (prevent flicker)
-    if (config.useDots && pointsRef.current && config.mouseInteraction) {
-      const material = pointsRef.current.material as THREE.ShaderMaterial;
-      if (material.uniforms) {
-        // Only update if values actually changed
-        const mouseChanged = !mousePosition.equals(prevMousePos.current);
-        const interactionChanged = prevMouseInteraction.current !== config.mouseInteraction;
-        const forceChanged = prevMouseForce.current !== config.mouseForce;
-        
-        if (mouseChanged || interactionChanged || forceChanged) {
-          if (mouseChanged) {
-            material.uniforms.mousePosition.value.copy(mousePosition);
-            prevMousePos.current.copy(mousePosition);
-          }
-          if (interactionChanged) {
-            material.uniforms.mouseInteraction.value = config.mouseInteraction ? 1.0 : 0.0;
-            prevMouseInteraction.current = config.mouseInteraction;
-          }
-          if (forceChanged) {
-            material.uniforms.hoverStrength.value = config.mouseForce || 1.5;
-            prevMouseForce.current = config.mouseForce;
-          }
-        }
-      }
     }
   });
 
@@ -124,9 +50,9 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({ particles, confi
     renderParticles.forEach((particle, index) => {
       const i3 = index * 3;
       
-      // Positions (invert Y axis to match Houdini coordinate system)
+      // Positions (invert Y axis based on config)
       positions[i3] = particle.position[0];      // X
-      positions[i3 + 1] = -particle.position[1]; // Y inverted
+      positions[i3 + 1] = config.invertYAxis ? particle.position[1] : -particle.position[1]; // Y controlled by config
       positions[i3 + 2] = particle.position[2];  // Z
       
       // Colors (ensure they're in 0-1 range)
@@ -154,63 +80,31 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({ particles, confi
 
       material = new THREE.ShaderMaterial({
         uniforms: {
-          pointTexture: { value: dotTexture },
-          mousePosition: { value: mousePosition },
-          mouseInteraction: { value: config.mouseInteraction ? 1.0 : 0.0 },
-          hoverRadius: { value: 1.0 }, // MUCH smaller radius
-          hoverStrength: { value: config.mouseForce || 1.5 }
+          pointTexture: { value: dotTexture }
         },
         vertexShader: `
           attribute float size;
-          uniform vec3 mousePosition;
-          uniform float mouseInteraction;
-          uniform float hoverRadius;
-          uniform float hoverStrength;
           varying vec3 vColor;
-          varying float vHoverFactor;
           
           void main() {
             vColor = color;
-            vHoverFactor = 0.0;
             
-            // Transform position to world coordinates
-            vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-            vec4 mvPosition = viewMatrix * worldPosition;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
             
             // Base size calculation with depth attenuation
             float baseSize = size * (300.0 / -mvPosition.z);
-            float finalSize = baseSize;
             
-            // Mouse hover effect - PER PARTICLE
-            if (mouseInteraction > 0.5) {
-              // Calculate distance in world space, not model space
-              float distanceToMouse = distance(worldPosition.xyz, mousePosition);
-              
-              // Only affect particles within hover radius
-              if (distanceToMouse < hoverRadius) {
-                float hoverFactor = 1.0 - (distanceToMouse / hoverRadius);
-                hoverFactor = smoothstep(0.0, 1.0, hoverFactor); // Smooth transition
-                vHoverFactor = hoverFactor; // Pass to fragment for debugging
-                finalSize = baseSize * (1.0 + hoverFactor * hoverStrength);
-              }
-            }
-            
-            gl_PointSize = max(1.0, finalSize); // Ensure minimum size
+            gl_PointSize = max(1.0, baseSize); // Ensure minimum size
             gl_Position = projectionMatrix * mvPosition;
           }
         `,
         fragmentShader: `
           uniform sampler2D pointTexture;
           varying vec3 vColor;
-          varying float vHoverFactor;
           
           void main() {
             vec4 baseColor = vec4(vColor, 1.0);
             vec4 texColor = texture2D(pointTexture, gl_PointCoord);
-            
-            // Optional: Add slight color boost for hovered particles
-            // float colorBoost = 1.0 + (vHoverFactor * 0.2);
-            // baseColor.rgb *= colorBoost;
             
             gl_FragColor = baseColor * texColor;
             if (gl_FragColor.a < 0.1) discard;
@@ -232,7 +126,7 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({ particles, confi
     }
 
     return { geometry, material };
-  }, [renderParticles, config, mousePosition]);
+  }, [renderParticles, config]);
 
   // Set up instanced mesh if using spheres
   useMemo(() => {

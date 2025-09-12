@@ -36,12 +36,7 @@ export interface VisualizationConfig {
   bloomRadius: number;
   visualizationMode: 'json' | 'texture';
   enableRotation?: boolean;
-  enablePhysics?: boolean;
-  windStrength?: number;
-  windSpeed?: number;
-  mouseInteraction?: boolean;
-  mouseForce?: number;
-  returnSpeed?: number;
+  invertYAxis?: boolean;
 }
 
 export interface TextureData {
