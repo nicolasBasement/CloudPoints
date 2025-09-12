@@ -270,7 +270,7 @@ export const CustomUI: React.FC<CustomUIProps> = ({
                 onClick={onLoadHoudiniData}
                 disabled={isLoading}
               >
-                Load Houdini Data
+                Load Data
               </button>
             </div>
 

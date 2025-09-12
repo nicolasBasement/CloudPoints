@@ -1,209 +1,147 @@
 # CloudPoints - Particle Visualization
 
-Una aplicación web interactiva para visualizar partículas en 3D usando TypeScript, React y React Three Fiber.
+An interactive web application for visualizing particles in 3D using TypeScript, React, and React Three Fiber.
 
-## Características
+## Features
 
-### 🎯 Dos Modos de Visualización
+### Two Visualization Modes
 
-**Opción 1: Visualización Directa desde JSON**
-- Carga directa de datos de partículas desde archivos JSON
-- Renderizado en tiempo real de posiciones y colores
+**Option 1: Direct JSON Visualization**
+- Direct particle data loading from JSON files
+- Real-time rendering of positions and colors
 
-**Opción 2: Visualización basada en Texturas**
-- Genera texturas que almacenan datos de partículas
-- Posiciones codificadas en canales RGB de una textura
-- Colores almacenados en una textura separada
-- Optimizado para grandes cantidades de partículas
+**Option 2: Texture-based Visualization**
+- Generates textures that store particle data
+- Positions encoded in RGB channels of a texture
+- Colors stored in a separate texture
+- Optimized for large particle quantities
 
-### 🎮 Controles Interactivos (UI Personalizada CSS) 
+### Interactive Controls (Custom CSS UI)
 
-🎯 **SIN LEVA** - UI completamente personalizada con CSS moderno y glassmorphism
+**Available Dot Shapes**
+- Circular dots
+- Square dots
 
-**🌟 Características de la Nueva UI:**
-- **🎨 Glassmorphism Design**: Fondo translúcido con blur effects
-- **📱 Responsive**: Se adapta a móvil y desktop
-- **🗂️ Navegación por Tabs**: Visual / Data / Export organizados
-- **⚡ Sin Problemas de Sincronización**: Eliminados los bugs de botones deshabilitados de Leva
-- **🎯 Controles Intuitivos**: Sliders con valores en tiempo real, botones con iconos
-- **🐛 Debug Integrado**: Panel debug deslizable con JSON completo
-- **💫 Animaciones Fluidas**: Transiciones y hover effects modernos
-
-#### 🎨 Tab Visual (Controles de Rendering)
-- **💎 Direct** / **🖼️ Texture**: Botones para cambiar modo de visualización
-- **Particle Size**: Slider con valor en tiempo real (0.01 - 2.0, default: 0.15)
-- **⚪ Dots** / **🔵 Spheres**: Botones para tipo de partícula  
-- **⭕ Circular** / **⬜ Square**: Forma de dots (solo visible cuando useDots = true)
-- **Bloom Intensity**: Slider con preview (0-3)
-- **Bloom Radius**: Slider con preview (0-1) 
-- **🔄 Auto Rotation**: Checkbox para rotación automática de cámara
-- **🎯 Show Axes**: Checkbox para gismo RGB (X=rojo, Y=verde, Z=azul)
-
-#### 📊 Tab Data (Carga de Datos)
-- **🎭 Load Houdini Data**: Botón principal para datos P/Cd 
-- **📂 Load Custom JSON**: Carga archivos JSON personalizados
-- **🧪 Test Simple Data**: 5 partículas de prueba RGB
-- **🔄 Reset Loading State**: Aparece cuando `isLoading` se traba
-
-#### 💾 Tab Export (Exportación de Texturas)
-- **Export Format**: Botones PNG / JPG / EXR (*EXR-like precision)
-- **💾 Export Textures**: Exporta con formato seleccionado (con validación de estado)  
-- **📥 Load from Textures**: Carga desde 3 archivos (position + colors + metadata)
-- **Hints dinámicos**: Mensajes de error claros cuando export está deshabilitado
-
-#### Texture Export/Import ⭐ CON SELECTOR DE FORMATO
-- **Export Format**: Selector PNG/JPG/EXR (EXR si está disponible)
-- **Export Textures**: Exporta con el formato seleccionado (coordenadas corregidas)
-- **Load from Textures**: Importa de texturas para verificación
-- **✅ Fix**: Problema de escalado en ejes resuelto (inversión Y correcta)
-- **🎯 NUEVO**: Anti-Grid Mapping - Preserva distribución orgánica de partículas
-
-#### Debug ⭐ MEJORADO CON FIX DE LOADING
-- **Debug Mode**: Activa modo debug con información detallada + estado del botón export
-- **Reset Loading State**: 🔄 Botón para arreglar estados de carga trabados
-- **Test Simple Data**: 5 partículas de prueba con colores RGB puros
-- **✅ Loading Fix**: Botón export ya no se queda deshabilitado por isLoading trabado
-
-### 🔷 **Formas de Dots Disponibles**
-
-#### Circular (Default)
-- Gradiente radial suave desde el centro
-- Bordes difuminados para efecto natural
-- Mejor para simulaciones orgánicas o fluidas
-
-#### Square  
-- Gradiente lineal diagonal
-- Bordes más definidos pero con transición suave
-- Ideal para data visualization o efectos técnicos
-
-**Nota**: La forma se aplica a todos los modos (JSON, Texture, Debug) de manera consistente.
-
-### ✨ Efectos Visuales
-
-- Efectos de bloom y glow post-procesamiento
-- Rotación automática de la cámara
-- Controles de órbita (pan, zoom, rotate)
-- Fondo con gradiente radial
-- Estadísticas de rendimiento en tiempo real
-
-## Estructura del Proyecto
+## Project Structure
 
 ```
 src/
 ├── components/
-│   ├── ParticleSystem.tsx          # Visualización directa (JSON/Houdini)
-│   ├── TextureParticleSystem.tsx   # Visualización basada en texturas internas
-│   └── DebugParticleSystem.tsx     # Sistema de debug para diagnosticar problemas
+│   ├── ParticleSystem.tsx          # Direct visualization (JSON/Houdini)
+│   ├── TextureParticleSystem.tsx   # Internal texture-based visualization
+│   └── DebugParticleSystem.tsx     # Debug system for troubleshooting
 ├── hooks/
-│   └── useParticleData.ts          # Hook para gestión de datos completa
+│   └── useParticleData.ts          # Hook for complete data management
 ├── types/
-│   └── particle.ts                 # Tipos TypeScript (incluye Houdini)
+│   └── particle.ts                 # TypeScript types (includes Houdini)
 ├── utils/
-│   ├── houdiniParser.ts            # Parser y optimizador para formato Houdini
-│   ├── textureGenerator.ts         # Generador de texturas internas y procedurales
-│   ├── textureExporter.ts          # Exportador de texturas PNG básico
-│   ├── exrExporter.ts              ⭐ # Exportador EXR-like Float32 (ALTA PRECISIÓN)
-│   └── textureLoader.ts            ⭐ # Importador de texturas para verificación
-├── App.tsx                         # Componente principal con UI personalizada CSS
-└── main.tsx                        # Punto de entrada
+│   ├── houdiniParser.ts            # Parser and optimizer for Houdini format
+│   ├── textureGenerator.ts         # Internal and procedural texture generator
+│   ├── textureExporter.ts          # Basic PNG texture exporter
+│   ├── exrExporter.ts              # EXR-like Float32 exporter (HIGH PRECISION)
+│   └── textureLoader.ts            # Texture importer for verification
+├── App.tsx                         # Main component with custom CSS UI
+└── main.tsx                        # Entry point
 
 public/
-├── point_data.json                 # Datos reales de Houdini (1.2M partículas)
-└── particles-example.json         # Archivo de ejemplo interno
+├── point_data.json                 # Real Houdini data (1.2M particles)
+└── particles-example.json         # Internal example file
 ```
 
-## Instalación y Uso
+## Installation and Usage
 
-### Prerrequisitos
-- Node.js 16 o superior
-- npm o yarn
+### Prerequisites
+- Node.js 16 or higher
+- npm or yarn
 
-### Instalación
+### Installation
 
 ```bash
-# Instalar dependencias
+# Install dependencies
 npm install
 
-# Ejecutar en modo desarrollo
+# Run in development mode
 npm run dev
 
-# Construir para producción
+# Build for production
 npm run build
 ```
 
-### Uso
+### Usage
 
-1. **Abrir la aplicación**: La aplicación se ejecutará en `http://localhost:5173`
+1. **Open the application**: The application will run at `http://localhost:5173`
 
-2. **Cargar Datos**:
-   - **"Load Houdini Data"**: Carga tu archivo `point_data.json` de Houdini (1.2M → optimizado a 50K)
-   - **"Load Custom JSON"**: Carga cualquier archivo JSON con datos de partículas
-   - **"Test Simple Data"**: 5 partículas de prueba para debug rápido
+2. **Load Data**:
+   - **"Load Houdini Data"**: Load your Houdini `point_data.json` file (1.2M → optimized to 50K)
+   - **"Load Custom JSON"**: Load any JSON file with particle data
+   - **"Test Simple Data"**: 5 test particles for quick debugging
 
-### 🎨 **Flujo de Trabajo: Exportación e Importación de Texturas**
+### Workflow: Texture Export and Import
 
-#### Exportación (Partículas → Texturas)
-1. **Cargar datos**: Usa "Load Houdini Data" o "Load Custom JSON"
-2. **Seleccionar formato**: Elige PNG, JPG, o EXR en el dropdown
-3. **Exportar texturas**: Clic en "Export Textures"
-4. **Descargas automáticas**: Se descargan 3 archivos:
-   - `filename_positions_[FORMAT].png/jpg` - Posiciones normalizadas
-   - `filename_colors.png/jpg` - Colores RGB  
-   - `filename_metadata_[FORMAT].json` - Metadata con información de precisión
+#### Export (Particles → Textures)
+1. **Load data**: Use "Load Houdini Data" or "Load Custom JSON"
+2. **Select format**: Choose PNG, JPG, or EXR from dropdown
+3. **Export textures**: Click "Export Textures"
+4. **Automatic downloads**: 3 files are downloaded:
+   - `filename_positions_[FORMAT].png/jpg` - Normalized positions
+   - `filename_colors.png/jpg` - RGB colors
+   - `filename_metadata_[FORMAT].json` - Metadata with precision information
 
-##### 🎯 **Formatos Disponibles:**
-- **PNG**: 8-bit RGBA, máxima compatibilidad
-- **JPG**: 8-bit RGB comprimido, archivos más pequeños
-- **EXR**: Half Float (16-bit) si está disponible, máxima precisión
+##### Available Formats:
+- **PNG**: 8-bit RGBA, maximum compatibility
+- **JPG**: 8-bit RGB compressed, smaller files
+- **EXR**: Half Float (16-bit) if available, maximum precision
 
-#### Importación (Texturas → Verificación)
-1. **Cargar texturas**: Clic en "Load from Textures"
-2. **⚠️ IMPORTANTE**: Selecciona LOS 3 ARCHIVOS:
-   - `filename_positions_FORMAT.png` (posiciones)
-   - `filename_colors.png` (colores)  
-   - `filename_metadata_FORMAT.json` (📋 **CRÍTICO** - sin esto = escalado incorrecto)
-3. **Verificación automática**: La app reconstruye las partículas desde las texturas
-4. **✅ Coordenadas corregidas**: Sin problemas de escalado (inversión Y arreglada)
-5. **Comparación**: Verifica visualmente que coincidan con los datos originales
+#### Import (Textures → Verification)
+1. **Load textures**: Click "Load from Textures"
+2. **IMPORTANT**: Select ALL 3 FILES:
+   - `filename_positions_FORMAT.png` (positions)
+   - `filename_colors.png` (colors)
+   - `filename_metadata_FORMAT.json` (CRITICAL - without this = incorrect scaling)
+3. **Automatic verification**: App reconstructs particles from textures
+4. **Corrected coordinates**: No scaling issues (Y-axis inversion fixed)
+5. **Comparison**: Visually verify they match original data
 
-> **🚨 AVISO**: Si no seleccionas el archivo **metadata JSON**, verás bounds incorrectos `[-20,-20,-20] to [20,20,20]` y la forma se verá comprimida/incorrecta.
+> **WARNING**: If you don't select the **metadata JSON** file, you'll see incorrect bounds `[-20,-20,-20] to [20,20,20]` and the shape will appear compressed/incorrect.
 
-#### Estructura de las Texturas EXR
+#### EXR Texture Structure
 
-##### 🔥 **Textura de Posiciones con Anti-Grid**
-- **Formato**: PNG con mapeo aleatorio determinístico 
-- **Precisión**: 8-bit RGB con coordenadas normalizadas 0-1
-- **🎯 Anti-Grid Mapping**: 
-  - **Problema resuelto**: Las texturas exportadas mantenían patrón de grid artificial
-  - **Solución**: Mapeo shuffle determinista que preserva distribución orgánica original
-  - **Resultado**: Las partículas cargadas desde texturas mantienen aspecto natural de Houdini
+##### Position Texture with Anti-Grid
+- **Format**: PNG with deterministic random mapping
+- **Precision**: 8-bit RGB with normalized coordinates 0-1
+- **Anti-Grid Mapping**:
+  - **Problem solved**: Exported textures maintained artificial grid pattern
+  - **Solution**: Deterministic shuffle mapping that preserves original organic distribution
+  - **Result**: Particles loaded from textures maintain natural Houdini appearance
 
-##### 🎨 **Textura de Colores (Estándar PNG)**
-- **Formato**: PNG estándar con canales RGB
-- **Precisión**: 8 bits por canal (suficiente para colores 0-1)
+##### Color Texture (Standard PNG)
+- **Format**: Standard PNG with RGB channels
+- **Precision**: 8 bits per channel (sufficient for 0-1 colors)
 
-##### 📐 **Dimensiones y Rendimiento**
-- **Dimensiones**: Cuadrado potencia de 2 (ej: 512x512 para ~250K partículas)
-- **Archivo posiciones**: ~3x más grande pero infinitamente más preciso
-- **Compatibilidad**: Todos los navegadores (no requiere soporte EXR nativo)
+##### Dimensions and Performance
+- **Dimensions**: Power-of-2 square (e.g., 512x512 for ~250K particles)
+- **Position file**: 3x larger but infinitely more precise
+- **Compatibility**: All browsers (no native EXR support required)
 
-3. **Controles**:
-   - **Visualization Mode**: Cambiar entre 'json' y 'texture'
-   - **Particle Size**: Ajustar tamaño (0.01 - 2.0, por defecto 0.15)
-   - **Use Dots**: Alternar entre puntos y esferas
-   - **Bloom**: Controlar efectos de resplandor
+3. **Controls**:
+   - **Visualization Mode**: Switch between 'json' and 'texture'
+   - **Particle Size**: Adjust size (0.01 - 2.0, default 0.15)
+   - **Use Dots**: Toggle between dots and spheres
+   - **Bloom**: Control glow effects
+   - **Background Color**: Color picker and hex input for background
+   - **Invert Y-Axis**: Flip particles vertically
 
-4. **Navegación 3D**:
-   - **Click y arrastrar**: Rotar cámara
-   - **Rueda del ratón**: Zoom
-   - **Click derecho y arrastrar**: Pan
-   - **Gismo RGB**: X=Rojo, Y=Verde, Z=Azul para orientación
+4. **3D Navigation**:
+   - **Click and drag**: Rotate camera
+   - **Mouse wheel**: Zoom
+   - **Right click and drag**: Pan
+   - **RGB Gizmo**: X=Red, Y=Green, Z=Blue for orientation
 
-## Formatos de Datos Soportados
+## Supported Data Formats
 
-### 🎨 Formato Houdini (Recomendado)
+### Houdini Format (Recommended)
 
-La aplicación ahora soporta nativamente el formato JSON exportado por Houdini:
+The application natively supports JSON format exported by Houdini:
 
 ```json
 [
@@ -218,15 +156,15 @@ La aplicación ahora soporta nativamente el formato JSON exportado por Houdini:
 ]
 ```
 
-- `P`: Posición de la partícula [x, y, z]
-- `Cd`: Color de la partícula [r, g, b] (valores 0-1)
+- `P`: Particle position [x, y, z]
+- `Cd`: Particle color [r, g, b] (values 0-1)
 
-### 📊 Optimización Automática
-- Archivos grandes (>100K partículas) se optimizan automáticamente
-- Sub-muestreo inteligente para mantener rendimiento
-- Indicador visual cuando se aplica optimización
+### Automatic Optimization
+- Large files (>100K particles) are automatically optimized
+- Smart subsampling to maintain performance
+- Visual indicator when optimization is applied
 
-### Formato Interno (Alternativo)
+### Internal Format (Alternative)
 
 ```json
 {
@@ -249,82 +187,82 @@ La aplicación ahora soporta nativamente el formato JSON exportado por Houdini:
 }
 ```
 
-### Campos Requeridos por Partícula
-- `id`: Identificador único (string)
-- `position`: Array de 3 números [x, y, z]
-- `color`: Array de 3 números [r, g, b] (valores 0-1)
-- `size`: Número opcional (multiplicador de tamaño)
+### Required Fields per Particle
+- `id`: Unique identifier (string)
+- `position`: Array of 3 numbers [x, y, z]
+- `color`: Array of 3 numbers [r, g, b] (values 0-1)
+- `size`: Optional number (size multiplier)
 
-## Tecnologías Utilizadas
+## Technologies Used
 
-- **React 18**: Framework de UI
-- **TypeScript**: Tipado estático
-- **React Three Fiber**: React renderer para Three.js
-- **@react-three/drei**: Utilidades para R3F
-- **@react-three/postprocessing**: Efectos post-procesamiento
-- **CSS Personalizado**: UI moderna sin dependencias externas de controles
-- **Three.js**: Motor 3D
-- **Vite**: Build tool y dev server
+- **React 18**: UI Framework
+- **TypeScript**: Static typing
+- **React Three Fiber**: React renderer for Three.js
+- **@react-three/drei**: Utilities for R3F
+- **@react-three/postprocessing**: Post-processing effects
+- **Custom CSS**: Modern UI without external control dependencies
+- **Three.js**: 3D Engine
+- **Vite**: Build tool and dev server
 
-## ⚠️ Troubleshooting
+## Troubleshooting
 
-### 🚫 Botón "Export Textures" Deshabilitado
+### "Export Textures" Button Disabled
 
-**Síntomas**: El botón se ve gris y no se puede hacer clic
+**Cause**: No particles loaded or loading in progress
 
-**Diagnóstico**: Mira la esquina superior izquierda de la app:
-- `Export: DISABLED ❌` 
-- `Reasons: Loading NoData Empty`
+**Solution**: Load particle data first using one of the loading options
 
-**Soluciones**:
-1. **Loading**: Clic en "Reset Loading State" en panel Debug
-2. **NoData**: Usa "Load Houdini Data" o "Load Custom JSON" 
-3. **Empty**: El archivo JSON no tiene partículas válidas
-4. **UI Responsive**: La nueva UI CSS es completamente responsive y no tiene problemas de sincronización
+### Texture Import Issues
 
-### 🎯 Escalado Incorrecto al Cargar Texturas
-
-**Síntomas**: Las partículas se ven comprimidas o con bounds `[-20,-20,-20] to [20,20,20]`
-
-**Causa**: No seleccionaste el archivo metadata JSON
-
-**Solución**: En "Load from Textures", selecciona **LOS 3 ARCHIVOS**:
+**Solution**: In "Load from Textures", select ALL 3 FILES:
 - `filename_positions_FORMAT.png`
-- `filename_colors.png` 
-- **`filename_metadata_FORMAT.json`** ← **CRÍTICO**
+- `filename_colors.png`
+- **`filename_metadata_FORMAT.json`** ← **CRITICAL**
 
-### 🔍 Debug Info
+## Performance
 
-- Activa "Debug Mode" para ver información detallada
-- Abre consola del navegador (F12) para logs detallados
-- El debug siempre muestra estado del botón export
+### Optimizations for Houdini Files
+- **Automatic Detection**: Recognizes Houdini vs internal format automatically
+- **Streaming**: Efficient handling of large files (>10MB)
+- **Smart Subsampling**: Automatically reduces particles to maintain 60 FPS
+- **Visual Indicators**: Shows when optimizations are applied
 
-## Rendimiento
+### Rendering Modes
+- **JSON Option**: Optimal for up to ~50,000 particles (optimized)
+- **Texture Option**: Optimal for 50,000+ particles
+- **Dots vs Spheres**: Dots are more efficient for large quantities
+- **Bloom Effect**: May impact performance with many particles
 
-### 🚀 Optimizaciones para Archivos de Houdini
-- **Detección Automática**: Reconoce formato Houdini vs interno automáticamente
-- **Streaming**: Manejo eficiente de archivos grandes (>10MB)
-- **Sub-muestreo Inteligente**: Reduce automáticamente partículas para mantener 60 FPS
-- **Indicadores Visuales**: Muestra cuando se aplican optimizaciones
+### Recommendations
+- For large Houdini files: Use 'texture' mode + 'dots' + automatic optimization
+- Datasets <10K: Any configuration works well
+- Datasets >100K: Automatic subsampling will be applied
 
-### Modos de Renderizado
-- **Opción JSON**: Optimal para hasta ~50,000 partículas (optimizado)
-- **Opción Texture**: Optimal para 50,000+ partículas
-- **Dots vs Spheres**: Los dots son más eficientes para grandes cantidades
-- **Bloom Effect**: Puede impactar rendimiento con muchas partículas
+## Customization
 
-### Recomendaciones
-- Para archivos de Houdini grandes: Usar modo 'texture' + 'dots' + optimización automática
-- Datasets <10K: Cualquier configuración funciona bien
-- Datasets >100K: Se aplicará sub-muestreo automático
+### Adding New Effects
+Modify `src/App.tsx` and add more effects to the `EffectComposer`.
 
-## Personalización
+### Changing Shaders
+Shaders are defined in `ParticleSystem.tsx` and `TextureParticleSystem.tsx`.
 
-### Agregar Nuevos Efectos
-Modificar `src/App.tsx` y agregar más efectos en el `EffectComposer`.
+### New Controls
+Add controls in the `CustomUI` component and the `UIState` state in `App.tsx`.
 
-### Cambiar Shaders
-Los shaders están definidos en `ParticleSystem.tsx` y `TextureParticleSystem.tsx`.
+## Build and Deploy
 
-### Nuevos Controles
-Agregar controles en el componente `CustomUI` y el estado `UIState` en `App.tsx`.
+### Local Build
+```bash
+npm run build
+```
+
+### Deploy to Vercel
+1. Connect your GitHub repository to Vercel
+2. Vercel will automatically detect the Vite configuration
+3. Deploy with default settings
+
+The application is optimized for production deployment and includes:
+- Automatic code splitting
+- Asset optimization
+- TypeScript compilation
+- Modern browser support
